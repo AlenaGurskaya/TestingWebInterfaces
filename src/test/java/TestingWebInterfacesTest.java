@@ -11,6 +11,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestingWebInterfacesTest {
     private WebDriver driver;
@@ -43,12 +44,12 @@ public class TestingWebInterfacesTest {
     })
     public void shouldBeSuccessMessage(String name) {
         driver.get("http://localhost:9999/");
-        WebElement form = driver.findElement(By.cssSelector("[class='form form_size_m form_theme_alfa-on-white']"));
-        form.findElement(By.cssSelector("[name='name']")).sendKeys(name);
-        form.findElement(By.cssSelector("[name='phone']")).sendKeys("+79649005050");
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys(name);
+        form.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("+79649005050");
         form.findElement(By.cssSelector("[data-test-id='agreement']")).click();
         form.findElement(By.cssSelector("button")).click();
-        String text = driver.findElement(By.className("Success_successBlock__2L3Cw")).getText();
+        String text = driver.findElement(By.cssSelector("[data-test-id='order-success']")).getText();
 
         assertEquals("Ваша заявка успешно отправлена! Наш менеджер свяжется с вами в ближайшее время.", text.trim());
     }
@@ -69,12 +70,12 @@ public class TestingWebInterfacesTest {
     })
     public void shouldBeMessageAboutInvalidSurnameAndFirstName(String name, String expected) {
         driver.get("http://localhost:9999/");
-        WebElement form = driver.findElement(By.cssSelector("[class='form form_size_m form_theme_alfa-on-white']"));
-        form.findElement(By.cssSelector("[name='name']")).sendKeys(name);
-        form.findElement(By.cssSelector("[name='phone']")).sendKeys("+79649005050");
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys(name);
+        form.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("+79649005050");
         form.findElement(By.cssSelector("[data-test-id='agreement']")).click();
         form.findElement(By.cssSelector("button")).click();
-        String text = driver.findElement(By.cssSelector("[data-test-id='name'] .input__sub")).getText();
+        String text = driver.findElement(By.cssSelector("[data-test-id='name'].input_invalid .input__sub")).getText();
 
         assertEquals(expected, text.trim());
     }
@@ -90,12 +91,12 @@ public class TestingWebInterfacesTest {
     })
     public void shouldBeMessageAboutInvalidPhone(String phone, String expected) {
         driver.get("http://localhost:9999/");
-        WebElement form = driver.findElement(By.cssSelector("[class='form form_size_m form_theme_alfa-on-white']"));
-        form.findElement(By.cssSelector("[name='name']")).sendKeys("Иванов Иван");
-        form.findElement(By.cssSelector("[name='phone']")).sendKeys(phone);
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Иванов Иван");
+        form.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys(phone);
         form.findElement(By.cssSelector("[data-test-id='agreement']")).click();
         form.findElement(By.cssSelector("button")).click();
-        String text = driver.findElement(By.cssSelector("[data-test-id='phone'] .input__sub")).getText();
+        String text = driver.findElement(By.cssSelector("[data-test-id='phone'].input_invalid .input__sub")).getText();
 
         assertEquals(expected, text.trim());
     }
@@ -103,14 +104,13 @@ public class TestingWebInterfacesTest {
     @Test
     public void shouldBeMessageAboutInvalidCheckbox() {
         driver.get("http://localhost:9999/");
-        WebElement form = driver.findElement(By.cssSelector("[class='form form_size_m form_theme_alfa-on-white']"));
-        form.findElement(By.cssSelector("[name='name']")).sendKeys("Иванов Иван");
-        form.findElement(By.cssSelector("[name='phone']")).sendKeys("+79649005050");
+        WebElement form = driver.findElement(By.cssSelector("form"));
+        form.findElement(By.cssSelector("[data-test-id='name'] input")).sendKeys("Иванов Иван");
+        form.findElement(By.cssSelector("[data-test-id='phone'] input")).sendKeys("+79649005050");
         form.findElement(By.cssSelector("button")).click();
 
-        WebElement error = driver.findElement(By.cssSelector("[data-test-id='agreement']"));
-        String actualColor = error.getCssValue("color");
+        WebElement error = driver.findElement(By.cssSelector("[data-test-id='agreement'].input_invalid"));
 
-        assertEquals("rgba(255, 92, 92, 1)", actualColor);
+        assertTrue(error.isDisplayed(), "Я соглашаюсь с условиями обработки и использования моих персональных данных и разрешаю сделать запрос в бюро кредитных историй");
     }
 }
